@@ -41,7 +41,7 @@ export const CTA_GAP = 12;
 
 const DISC_R = 22;
 const NOTCH_R = DISC_R + 6; // 6px gap, uniform at every position
-const NOTCH_DY = 11; // cut centre sits below the top edge, so it bites deeper
+const NOTCH_DY = 5; // shallower cut: the disc rides higher and the sides flatten
 const TOP = DISC_R - NOTCH_DY + 8;
 const NOTCH_CY = TOP + NOTCH_DY;
 const H = TOP + BAR_H;
@@ -53,14 +53,15 @@ const PILL = pillPath(TOP, W, BAR_H, BAR_R);
    reach allows: BAR_R + sqrt((NOTCH_R+rf)^2 - (NOTCH_DY-rf)^2). Easing the
    resting shoulder from 20 to 10 pulls that limit in from 77px to 67px, which
    is what lets the icons spread wider. */
-/* Gentler sweep into the notch. Raising the resting shoulder pushes the
-   outer slots inward, so they move with it. */
-const SHOULDER_REST = 14;
-const SHOULDER_MAX = 26;
+/* The wave. Depth over horizontal reach is what reads as slope: at DY 11 /
+   shoulder 14 that ratio was 0.93 — nearly 45 degrees. Shallower cut plus a
+   wider fillet brings it to 0.72, which is the long flat sweep. */
+const SHOULDER_REST = 20;
+const SHOULDER_MAX = 30;
 
 const SPEED_SCALE = 1500;
 
-const SLOT_X = [68.1, 117, 166, 214.9];
+const SLOT_X = [71.8, 118.3, 164.7, 211.2];
 const MIN_X = SLOT_X[0];
 const MAX_X = SLOT_X[SLOT_X.length - 1];
 
@@ -78,13 +79,13 @@ const TONE = {
     idle: "rgba(255,255,255,0.55)",
   },
   light: {
-    // The node's #E5E5E5 -> #ECECEC moves only 3 levels across the bar, which
-    // the browser dithers into visible grain. Flat instead — and lifted well
-    // above the node's value, which read as flat grey rather than a light
-    // surface. The shadow and rim carry the separation from the screen.
-    fill: ["#E7E7E7", "#E7E7E7"] as const,
+    // Translucent white rather than a grey value: over the app screen it
+    // picks up whatever is behind it, so it reads as light glass instead of a
+    // grey slab. (The node's #E5E5E5 -> #ECECEC moved only 3 levels across the
+    // bar, which the browser dithered into visible grain.)
+    fill: ["rgba(255,255,255,0.78)", "rgba(255,255,255,0.66)"] as const,
     rim: ["#FFFFFF", "#EDEDED", "#FFFFFF"] as const,
-    idle: "rgba(0,0,0,0.42)",
+    idle: "rgba(0,0,0,0.38)",
   },
 } as const;
 
@@ -302,7 +303,7 @@ export default function ScoopNav({
         {/* Grain, clipped to the bar. */}
         <g
           clipPath={`url(#${uid}-clip)`}
-          opacity={tone === "dark" ? 0.16 : 0.07}
+          opacity={tone === "dark" ? 0.16 : 0.035}
           style={{ mixBlendMode: "overlay" }}
         >
           <rect
