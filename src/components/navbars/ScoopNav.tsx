@@ -13,9 +13,8 @@ import {
 import {
   LEAD_SPRING,
   ORB_BASE,
-  ORB_ELLIPSES,
+  OrbDisc,
   ORB_ICON,
-  ORB_SHEEN,
   SLOTS,
   SlotIcon,
   clamp,
@@ -28,18 +27,17 @@ import {
    The bar keeps Figma's 52.46 height and 26.23 radius but runs 335 wide: at
    the node's 272.5 the shoulders leave only 34.5px between slots, which the
    20px icons cannot live in. */
-/* Compact, to leave room for an ingress CTA beside it:
-   283 bar + 12 gap + 52 CTA = 347, i.e. 14px margins on a 375 screen.
-   The disc shrinks to 22 so four slots still fit — at the 25 used elsewhere
-   the notch's reach would squeeze spacing down to 49px. */
-const W = 283;
-const BAR_H = 52.46;
-const BAR_R = 26.23;
+/* Compact, leaving room for the ingress CTA beside it:
+   268 bar + 12 gap + 46 CTA = 326, i.e. 33.5px margins on the 393 screen.
+   Depth is 31 of 46 (67%) and the slope ratio holds at 0.71. */
+const W = 268;
+const BAR_H = 46;
+const BAR_R = BAR_H / 2;
 export const BAR_W = W;
-export const CTA_SIZE = 52;
+export const CTA_SIZE = 46;
 export const CTA_GAP = 12;
 
-const DISC_R = 22;
+const DISC_R = 20;
 const NOTCH_R = DISC_R + 6; // 6px gap, uniform at every position
 const NOTCH_DY = 5; // shallower cut: the disc rides higher and the sides flatten
 const TOP = DISC_R - NOTCH_DY + 8;
@@ -61,7 +59,7 @@ const SHOULDER_MAX = 30;
 
 const SPEED_SCALE = 1500;
 
-const SLOT_X = [71.8, 118.3, 164.7, 211.2];
+const SLOT_X = [66.5, 111.5, 156.5, 201.5];
 const MIN_X = SLOT_X[0];
 const MAX_X = SLOT_X[SLOT_X.length - 1];
 
@@ -368,24 +366,18 @@ export default function ScoopNav({
           width: DISC_R * 2,
           height: DISC_R * 2,
           background: ORB_BASE,
+          // Lit from the top left: a bright inner edge up there, a darker one
+          // opposite, and a contact shadow under it. That trio is what turns a
+          // flat circle into a ball.
+          boxShadow: [
+            "inset 0 3px 6px rgba(255,255,255,0.95)",
+            "inset 0 -5px 10px rgba(120,110,130,0.16)",
+            "inset -4px -3px 9px rgba(120,110,130,0.10)",
+            "0 5px 10px -4px rgba(60,50,70,0.20)",
+          ].join(", "),
         }}
       >
-        {!plainOrb &&
-          ORB_ELLIPSES.map((color, i) => (
-            <span
-              key={color}
-              className={`orb-ellipse orb-e${i + 1}`}
-              style={{ background: `radial-gradient(circle, ${color}, transparent 68%)` }}
-            />
-          ))}
-        <span className="absolute inset-0 rounded-full" style={{ background: ORB_SHEEN }} />
-        <span
-          className="absolute inset-0 rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 59%, rgba(255,255,255,0.74) 100%)",
-          }}
-        />
+        <OrbDisc r={DISC_R} plain={plainOrb} />
       </motion.div>
 
       {/* Selected icon, riding in the disc. */}

@@ -16,9 +16,8 @@ import {
   ICON_OFFSET,
   LEAD_SPRING,
   ORB_BASE,
-  ORB_ELLIPSES,
+  OrbDisc,
   ORB_R,
-  ORB_SHEEN,
   PILL_H,
   PILL_W,
   W,
@@ -263,24 +262,10 @@ export default function OrbNav3D({ plainOrb = false }: { plainOrb?: boolean } = 
           width: ORB_R * 2,
           height: ORB_R * 2,
           background: ORB_BASE,
+          boxShadow: `0 ${ORB_R * 0.2}px ${ORB_R * 0.42}px -${ORB_R * 0.22}px rgba(58,48,70,0.22)`,
         }}
       >
-        {!plainOrb &&
-          ORB_ELLIPSES.map((color, i) => (
-            <span
-              key={color}
-              className={`orb-ellipse orb-e${i + 1}`}
-              style={{ background: `radial-gradient(circle, ${color}, transparent 68%)` }}
-            />
-          ))}
-        <span className="absolute inset-0 rounded-full" style={{ background: ORB_SHEEN }} />
-        <span
-          className="absolute inset-0 rounded-full"
-          style={{
-            background:
-              "radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 59%, rgba(255,255,255,0.74) 100%)",
-          }}
-        />
+        <OrbDisc r={ORB_R} plain={plainOrb} />
       </motion.div>
 
       {/* Selected icon: spins once on a Y axis and colours up as it lands. */}

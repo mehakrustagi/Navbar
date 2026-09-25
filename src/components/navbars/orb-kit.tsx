@@ -267,6 +267,71 @@ export function SlotIcon({
 }
 
 /**
+ * The selected disc, shaded as a ball: aurora field, a tight specular up
+ * where the light is, shading falling off to the opposite edge, and a bounce
+ * highlight along the bottom rim. Shared so every nav's disc matches.
+ */
+export function OrbDisc({ r, plain = false }: { r: number; plain?: boolean }) {
+  return (
+    <>
+      {!plain &&
+        ORB_ELLIPSES.map((color, i) => (
+          <span
+            key={color}
+            className={`orb-ellipse orb-e${i + 1}`}
+            style={{ background: `radial-gradient(circle, ${color}, transparent 68%)` }}
+          />
+        ))}
+
+      <span className="absolute inset-0 rounded-full" style={{ background: ORB_SHEEN }} />
+
+      {/* colour dissolves into the rim rather than stopping against it */}
+      <span
+        className="absolute inset-0 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 59%, rgba(255,255,255,0.74) 100%)",
+        }}
+      />
+
+      {/* body shading: nothing near the light, deepening to the far edge */}
+      <span
+        className="absolute inset-0 rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at 31% 24%, rgba(255,255,255,0) 38%, rgba(118,108,128,0.13) 78%, rgba(96,86,110,0.22) 100%)",
+        }}
+      />
+
+      {/* bounce light along the lower rim, which is what stops it reading flat */}
+      <span
+        className="absolute inset-0 rounded-full"
+        style={{
+          background:
+            "radial-gradient(60% 40% at 62% 96%, rgba(255,255,255,0.75), rgba(255,255,255,0) 60%)",
+        }}
+      />
+
+      {/* specular — small and tight, so it reads as a highlight not a wash */}
+      <span
+        className="absolute inset-0 rounded-full"
+        style={{
+          background:
+            "radial-gradient(34% 27% at 31% 23%, rgba(255,255,255,0.98), rgba(255,255,255,0) 68%)",
+        }}
+      />
+
+      <span
+        className="pointer-events-none absolute inset-0 rounded-full"
+        style={{
+          boxShadow: `inset 0 ${r * 0.14}px ${r * 0.28}px rgba(255,255,255,0.95), inset 0 -${r * 0.22}px ${r * 0.4}px rgba(110,100,124,0.18)`,
+        }}
+      />
+    </>
+  );
+}
+
+/**
  * The orb itself: white rim (50) → black disc (44) → skin (44) → glow (65).
  * The skin is either the design's artwork or the tab's aurora gradients, and
  * crossfades when `skinKey` changes.
