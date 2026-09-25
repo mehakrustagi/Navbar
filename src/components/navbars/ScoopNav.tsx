@@ -43,7 +43,7 @@ export const CTA_SIZE = 48;
 export const CTA_GAP = 12;
 
 /** The screen's surface tokens. */
-const SYS_SHADOW = "0px 3.84px 28.8px -1.92px rgba(0,0,0,0.05)";
+const SYS_SHADOW = "0px 3.84px 28.8px -1.92px rgba(0,0,0,0.10)";
 const SYS_ICON = 24;
 
 const DISC_R = 22;
@@ -82,6 +82,7 @@ const TONE = {
     // Figma's gradient vector runs far outside the bar; these are the colours
     // it actually resolves to at the bar's own edges.
     fill: ["#090909", "#434343"] as const,
+    rim: "rgba(255,255,255,0.22)",
     idle: "rgba(255,255,255,0.42)",
   },
   light: {
@@ -89,7 +90,8 @@ const TONE = {
     // picks up whatever is behind it, so it reads as light glass instead of a
     // grey slab. (The node's #E5E5E5 -> #ECECEC moved only 3 levels across the
     // bar, which the browser dithered into visible grain.)
-    fill: ["rgba(255,255,255,0.4)", "rgba(255,255,255,0.4)"] as const,
+    fill: ["#FFFFFE", "#FFFFFE"] as const,
+    rim: "#FFFFFF",
     idle: "rgba(0,0,0,0.26)",
   },
 } as const;
@@ -271,10 +273,15 @@ export default function ScoopNav({
           >
             <feGaussianBlur in="SourceAlpha" stdDeviation="14.4" result="b1" />
             <feOffset in="b1" dy="3.84" result="o1" />
-            <feFlood floodColor="#000000" floodOpacity="0.05" result="c1" />
+            <feFlood floodColor="#000000" floodOpacity="0.10" result="c1" />
             <feComposite in="c1" in2="o1" operator="in" result="s1" />
+            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="b2" />
+            <feOffset in="b2" dy="2" result="o2" />
+            <feFlood floodColor="#000000" floodOpacity="0.06" result="c2" />
+            <feComposite in="c2" in2="o2" operator="in" result="s2" />
             <feMerge>
               <feMergeNode in="s1" />
+              <feMergeNode in="s2" />
             </feMerge>
           </filter>
 
@@ -299,6 +306,9 @@ export default function ScoopNav({
             <path d={PILL} fill="black" />
           </mask>
 
+          {/* White edge, stroked at 4 and clipped to the shape so only the
+              inner half shows — the action chips above use border-2 white, so
+              this is the same material. */}
           <clipPath id={`${uid}-clip`}>
             <motion.path d={d} />
           </clipPath>
@@ -308,6 +318,10 @@ export default function ScoopNav({
           <path d={PILL} fill="#000000" />
         </g>
         <motion.path d={d} fill={`url(#${uid}-fill)`} />
+        <g clipPath={`url(#${uid}-clip)`}>
+          <motion.path d={d} fill="none" stroke={t.rim} strokeWidth={4} />
+        </g>
+
         {/* Grain, clipped to the bar. */}
         <g
           clipPath={`url(#${uid}-clip)`}
@@ -422,8 +436,8 @@ export function ScoopCta({
         height: CTA_SIZE,
         // the screen's menu button: 48, radius 28.8, white/20, 1px #e8e8e8
         borderRadius: 28.8,
-        background: tone === "dark" ? "rgba(20,20,24,0.55)" : "rgba(255,255,255,0.2)",
-        boxShadow: SYS_SHADOW,
+        background: tone === "dark" ? "#141418" : "#FFFFFE",
+        boxShadow: `inset 0 0 0 2px ${TONE[tone].rim}, ${SYS_SHADOW}, 0 2px 6px rgba(0,0,0,0.06)`,
       }}
     >
       <img
