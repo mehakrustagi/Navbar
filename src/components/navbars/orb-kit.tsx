@@ -274,17 +274,6 @@ export function SlotIcon({
 export function OrbDisc({ r, plain = false }: { r: number; plain?: boolean }) {
   return (
     <>
-      {/* Body shading first. Stacking it *over* the colour was what turned the
-          orb to chrome — the shading, sheen and rim wash together desaturated
-          the aurora to silver. Shade the ball, then lay the colour on top. */}
-      <span
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at 31% 24%, rgba(255,255,255,0) 38%, rgba(118,108,128,0.15) 78%, rgba(96,86,110,0.26) 100%)",
-        }}
-      />
-
       {!plain &&
         ORB_ELLIPSES.map((color, i) => (
           <span
@@ -294,38 +283,32 @@ export function OrbDisc({ r, plain = false }: { r: number; plain?: boolean }) {
           />
         ))}
 
-      {/* Edge wash, pulled right back: it was bleaching the colour at the rim. */}
+      <span className="absolute inset-0 rounded-full" style={{ background: ORB_SHEEN }} />
+
+      {/* Colour dissolves into the rim rather than stopping against it. This
+          sits *over* the aurora on purpose: it is what softens the ball into
+          the pale, diffuse read rather than a saturated disc. */}
       <span
         className="absolute inset-0 rounded-full"
         style={{
           background:
-            "radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 74%, rgba(255,255,255,0.4) 100%)",
+            "radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 59%, rgba(255,255,255,0.74) 100%)",
         }}
       />
 
-      {/* Bounce light along the lower rim — what stops a ball reading flat. */}
+      {/* A single soft highlight — enough to give the ball a light source
+          without the hard specular that made it read as chrome. */}
       <span
         className="absolute inset-0 rounded-full"
         style={{
           background:
-            "radial-gradient(60% 40% at 62% 96%, rgba(255,255,255,0.6), rgba(255,255,255,0) 60%)",
-        }}
-      />
-
-      {/* Specular: small and tight, so it reads as a highlight not a wash. */}
-      <span
-        className="absolute inset-0 rounded-full"
-        style={{
-          background:
-            "radial-gradient(30% 24% at 31% 23%, rgba(255,255,255,0.95), rgba(255,255,255,0) 68%)",
+            "radial-gradient(46% 38% at 33% 26%, rgba(255,255,255,0.55), rgba(255,255,255,0) 72%)",
         }}
       />
 
       <span
         className="pointer-events-none absolute inset-0 rounded-full"
-        style={{
-          boxShadow: `inset 0 ${r * 0.12}px ${r * 0.24}px rgba(255,255,255,0.8), inset 0 -${r * 0.2}px ${r * 0.36}px rgba(110,100,124,0.2)`,
-        }}
+        style={{ boxShadow: `inset 0 -${r * 0.16}px ${r * 0.3}px rgba(120,110,132,0.10)` }}
       />
     </>
   );
