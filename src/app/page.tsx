@@ -20,13 +20,9 @@ const NOTCH_ITEMS: NavItem[] = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-function OrbDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
+function OrbDemo({ bg, plainOrb, appBg }: { bg: string; plainOrb: boolean; appBg: boolean }) {
   return (
-    <Stage
-      background={bg}
-      tone="light"
-      pad={false}
-    >
+    <Stage background={bg} tone="light" pad={false} appBackdrop={appBg}>
       <div className="pb-7">
         <FigmaOrbNav plainOrb={plainOrb} />
       </div>
@@ -34,9 +30,9 @@ function OrbDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
   );
 }
 
-function ScoopDarkDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
+function ScoopDarkDemo({ bg, plainOrb, appBg }: { bg: string; plainOrb: boolean; appBg: boolean }) {
   return (
-    <Stage background={bg} tone="light" pad={false}>
+    <Stage background={bg} tone="light" pad={false} appBackdrop={appBg}>
       <div className="flex items-end justify-center pb-8" style={{ gap: CTA_GAP }}>
         <ScoopNav tone="dark" plainOrb={plainOrb} />
         <ScoopCta tone="dark" />
@@ -45,9 +41,9 @@ function ScoopDarkDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
   );
 }
 
-function ScoopLightDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
+function ScoopLightDemo({ bg, plainOrb, appBg }: { bg: string; plainOrb: boolean; appBg: boolean }) {
   return (
-    <Stage background={bg} tone="light" pad={false}>
+    <Stage background={bg} tone="light" pad={false} appBackdrop={appBg}>
       <div className="flex items-end justify-center pb-8" style={{ gap: CTA_GAP }}>
         <ScoopNav tone="light" plainOrb={plainOrb} />
         <ScoopCta tone="light" />
@@ -56,9 +52,9 @@ function ScoopLightDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
   );
 }
 
-function Orb3DDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
+function Orb3DDemo({ bg, plainOrb, appBg }: { bg: string; plainOrb: boolean; appBg: boolean }) {
   return (
-    <Stage background={bg} tone="light" pad={false}>
+    <Stage background={bg} tone="light" pad={false} appBackdrop={appBg}>
       <div className="pb-7">
         <OrbNav3D plainOrb={plainOrb} />
       </div>
@@ -66,9 +62,9 @@ function Orb3DDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
   );
 }
 
-function LiquidGlassDemo({ bg }: { bg: string }) {
+function LiquidGlassDemo({ bg, appBg }: { bg: string; appBg: boolean }) {
   return (
-    <Stage background={bg} tone="light" pad={false}>
+    <Stage background={bg} tone="light" pad={false} appBackdrop={appBg}>
       <div className="pb-8">
         <LiquidGlassNav />
       </div>
@@ -76,9 +72,9 @@ function LiquidGlassDemo({ bg }: { bg: string }) {
   );
 }
 
-function OrbLiquidDemo({ bg }: { bg: string }) {
+function OrbLiquidDemo({ bg, appBg }: { bg: string; appBg: boolean }) {
   return (
-    <Stage background={bg} tone="light" pad={false}>
+    <Stage background={bg} tone="light" pad={false} appBackdrop={appBg}>
       <div className="pb-7">
         <OrbNavLiquid />
       </div>
@@ -95,9 +91,9 @@ function LiquidNotchDemo() {
   );
 }
 
-function BouncingBallDemo({ bg }: { bg: string }) {
+function BouncingBallDemo({ bg, appBg }: { bg: string; appBg: boolean }) {
   return (
-    <Stage background={bg} tone="light" pad={false}>
+    <Stage background={bg} tone="light" pad={false} appBackdrop={appBg}>
       <div className="pb-7">
         <BouncingBall />
       </div>
@@ -169,7 +165,9 @@ export default function Page() {
   const [tab, setTab] = useState("liquid");
   // Orb fill: the drifting aurora, or a plain white disc.
   const [orb, setOrb] = useState<"colour" | "white">("colour");
+  const [screen, setScreen] = useState<"white" | "app">("white");
   const bg = "#FFFFFF";
+  const appBg = screen === "app";
   const current = TABS.find((t) => t.id === tab)!;
 
   return (
@@ -202,6 +200,22 @@ export default function Page() {
         <div className="mt-6 flex items-center gap-3">
           <p className="text-xs text-neutral-400">{current.hint}</p>
           <span className="ml-auto inline-flex rounded-full bg-neutral-100 p-1">
+            {(["white", "app"] as const).map((k) => (
+              <button
+                key={k}
+                onClick={() => setScreen(k)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-[12px] font-medium transition-colors",
+                  screen === k
+                    ? "bg-neutral-900 text-white"
+                    : "text-neutral-500 hover:text-neutral-800",
+                )}
+              >
+                screen: {k}
+              </button>
+            ))}
+          </span>
+          <span className="inline-flex rounded-full bg-neutral-100 p-1">
             {(["colour", "white"] as const).map((k) => (
               <button
                 key={k}
@@ -220,14 +234,14 @@ export default function Page() {
         </div>
 
         <div className="mt-6 flex justify-center">
-          {tab === "orb" && <OrbDemo bg={bg} plainOrb={orb === "white"} />}
-          {tab === "orb-liquid" && <OrbLiquidDemo bg={bg} />}
-          {tab === "glass" && <LiquidGlassDemo bg={bg} />}
-          {tab === "orb-3d" && <Orb3DDemo bg={bg} plainOrb={orb === "white"} />}
-          {tab === "scoop-dark" && <ScoopDarkDemo bg={bg} plainOrb={orb === "white"} />}
-          {tab === "scoop-light" && <ScoopLightDemo bg={bg} plainOrb={orb === "white"} />}
+          {tab === "orb" && <OrbDemo bg={bg} plainOrb={orb === "white"} appBg={appBg} />}
+          {tab === "orb-liquid" && <OrbLiquidDemo bg={bg} appBg={appBg} />}
+          {tab === "glass" && <LiquidGlassDemo bg={bg} appBg={appBg} />}
+          {tab === "orb-3d" && <Orb3DDemo bg={bg} plainOrb={orb === "white"} appBg={appBg} />}
+          {tab === "scoop-dark" && <ScoopDarkDemo bg={bg} plainOrb={orb === "white"} appBg={appBg} />}
+          {tab === "scoop-light" && <ScoopLightDemo bg={bg} plainOrb={orb === "white"} appBg={appBg} />}
           {tab === "liquid" && <LiquidNotchDemo />}
-          {tab === "ball" && <BouncingBallDemo bg={bg} />}
+          {tab === "ball" && <BouncingBallDemo bg={bg} appBg={appBg} />}
           {VARIANTS.some((v) => v.id === tab) && <RegistryDemo id={tab} />}
         </div>
       </div>
