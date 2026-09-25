@@ -27,17 +27,27 @@ import {
    The bar keeps Figma's 52.46 height and 26.23 radius but runs 335 wide: at
    the node's 272.5 the shoulders leave only 34.5px between slots, which the
    20px icons cannot live in. */
-/* Compact, leaving room for the ingress CTA beside it:
-   268 bar + 12 gap + 46 CTA = 326, i.e. 33.5px margins on the 393 screen.
-   Depth is 31 of 46 (67%) and the slope ratio holds at 0.71. */
-const W = 268;
-const BAR_H = 46;
+/* Sized to the app screen's own system (Figma 294:2328), so the nav is a peer
+   of the controls above it rather than its own scale:
+     content block  340 wide at left 26
+     input row      h 56, 1px #e8e8e8, rgba(255,255,255,0.4)
+     menu button    48, radius 28.8, rgba(255,255,255,0.2)
+     shadow         0 3.84 28.8 -1.92 rgba(0,0,0,0.05)
+     icons          24
+   280 bar + 12 gap + 48 CTA = 340, matching the block exactly. */
+const W = 280;
+const BAR_H = 56;
 const BAR_R = BAR_H / 2;
 export const BAR_W = W;
-export const CTA_SIZE = 46;
+export const CTA_SIZE = 48;
 export const CTA_GAP = 12;
 
-const DISC_R = 20;
+/** The screen's surface tokens. */
+const SYS_BORDER = "#e8e8e8";
+const SYS_SHADOW = "0px 3.84px 28.8px -1.92px rgba(0,0,0,0.05)";
+const SYS_ICON = 24;
+
+const DISC_R = 22;
 const NOTCH_R = DISC_R + 6; // 6px gap, uniform at every position
 const NOTCH_DY = 5; // shallower cut: the disc rides higher and the sides flatten
 const TOP = DISC_R - NOTCH_DY + 8;
@@ -59,7 +69,7 @@ const SHOULDER_MAX = 30;
 
 const SPEED_SCALE = 1500;
 
-const SLOT_X = [66.5, 111.5, 156.5, 201.5];
+const SLOT_X = [73.6, 117.9, 162.1, 206.4];
 const MIN_X = SLOT_X[0];
 const MAX_X = SLOT_X[SLOT_X.length - 1];
 
@@ -81,8 +91,8 @@ const TONE = {
     // picks up whatever is behind it, so it reads as light glass instead of a
     // grey slab. (The node's #E5E5E5 -> #ECECEC moved only 3 levels across the
     // bar, which the browser dithered into visible grain.)
-    fill: ["rgba(255,255,255,0.78)", "rgba(255,255,255,0.66)"] as const,
-    rim: ["#FFFFFF", "#D6D6DA", "#FFFFFF"] as const,
+    fill: ["rgba(255,255,255,0.4)", "rgba(255,255,255,0.4)"] as const,
+    rim: [SYS_BORDER, SYS_BORDER, SYS_BORDER] as const,
     idle: "rgba(0,0,0,0.26)",
   },
 } as const;
@@ -139,7 +149,7 @@ function RowIcon({
   const scale = useTransform(opacity, (o) => 0.55 + o * 0.45);
   return (
     <motion.span style={{ opacity, scale }}>
-      <SlotIcon slot={slot} color={color} size={0.92} />
+      <SlotIcon slot={slot} color={color} size={SYS_ICON / Math.max(slot.w, slot.h)} />
     </motion.span>
   );
 }
@@ -265,7 +275,7 @@ export default function ScoopNav({
           </filter>
 
 
-          {/* Figma: 0/8/16 at 8% black, plus 0/0/4 at 4%. Built from
+          {/* The screen's shadow token: 0 3.84 28.8 -1.92 at 5%. Built from
               SourceAlpha so the bar itself is painted only once. */}
           <filter
             id={`${uid}-shadow`}
@@ -275,16 +285,12 @@ export default function ScoopNav({
             height="300%"
             colorInterpolationFilters="sRGB"
           >
-            <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="b1" />
-            <feOffset in="b1" dy="8" result="o1" />
-            <feFlood floodColor="#000000" floodOpacity="0.10" result="c1" />
+            <feGaussianBlur in="SourceAlpha" stdDeviation="14.4" result="b1" />
+            <feOffset in="b1" dy="3.84" result="o1" />
+            <feFlood floodColor="#000000" floodOpacity="0.05" result="c1" />
             <feComposite in="c1" in2="o1" operator="in" result="s1" />
-            <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b2" />
-            <feFlood floodColor="#000000" floodOpacity="0.05" result="c2" />
-            <feComposite in="c2" in2="b2" operator="in" result="s2" />
             <feMerge>
               <feMergeNode in="s1" />
-              <feMergeNode in="s2" />
             </feMerge>
           </filter>
 
@@ -336,7 +342,7 @@ export default function ScoopNav({
 
         {/* Inner 1px rim: stroked at 2 and clipped to the shape. */}
         <g clipPath={`url(#${uid}-clip)`}>
-          <motion.path d={d} fill="none" stroke={`url(#${uid}-rim)`} strokeWidth={1.8} />
+          <motion.path d={d} fill="none" stroke={`url(#${uid}-rim)`} strokeWidth={2} />
         </g>
       </svg>
 
@@ -393,7 +399,11 @@ export default function ScoopNav({
             exit={{ scale: 0.3, opacity: 0 }}
             transition={{ type: "spring", stiffness: 500, damping: 24 }}
           >
-            <SlotIcon slot={SLOTS[idx]} color={ORB_ICON} />
+            <SlotIcon
+              slot={SLOTS[idx]}
+              color={ORB_ICON}
+              size={SYS_ICON / Math.max(SLOTS[idx].w, SLOTS[idx].h)}
+            />
           </motion.span>
         </AnimatePresence>
       </motion.div>
@@ -419,7 +429,6 @@ export function ScoopCta({
   label?: string;
   onClick?: () => void;
 }) {
-  const t = TONE[tone];
   return (
     <motion.button
       type="button"
@@ -427,12 +436,14 @@ export function ScoopCta({
       aria-label={label}
       whileTap={{ scale: 0.92 }}
       transition={{ type: "spring", stiffness: 500, damping: 28 }}
-      className="flex items-center justify-center rounded-full"
+      className="flex items-center justify-center"
       style={{
         width: CTA_SIZE,
         height: CTA_SIZE,
-        background: `linear-gradient(135deg, ${t.fill[0]}, ${t.fill[1]})`,
-        boxShadow: `inset 0 0 0 1px ${t.rim}, 0 8px 16px rgba(0,0,0,0.08), 0 0 4px rgba(0,0,0,0.04)`,
+        // the screen's menu button: 48, radius 28.8, white/20, 1px #e8e8e8
+        borderRadius: 28.8,
+        background: tone === "dark" ? "rgba(20,20,24,0.55)" : "rgba(255,255,255,0.2)",
+        boxShadow: `inset 0 0 0 1px ${SYS_BORDER}, ${SYS_SHADOW}`,
       }}
     >
       <img
