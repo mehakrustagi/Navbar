@@ -6,12 +6,12 @@ import AppScreen from "@/components/AppScreen";
 import Stage, { useTab } from "@/components/Stage";
 import FigmaOrbNav from "@/components/navbars/FigmaOrbNav";
 import LiquidNotch from "@/components/navbars/LiquidNotch";
+import PillIndicator from "@/components/navbars/PillIndicator";
 import LiquidGlassNav from "@/components/navbars/LiquidGlassNav";
 import OrbNav3D from "@/components/navbars/OrbNav3D";
 import ScoopNav, { CTA_GAP, ScoopCta } from "@/components/navbars/ScoopNav";
 import OrbNavLiquid from "@/components/navbars/OrbNavLiquid";
 import BouncingBall from "@/components/navbars/BouncingBall";
-import { VARIANTS } from "@/components/navbars/registry";
 import type { NavItem } from "@/lib/nav-items";
 import { cn } from "@/lib/utils";
 
@@ -124,6 +124,15 @@ function OrbLiquidDemo({ bg, appBg }: { bg: string; appBg: boolean }) {
   );
 }
 
+function PillDemo({ appBg }: { appBg: boolean }) {
+  // slightly grey, so the dark bar is not sitting on pure white
+  return (
+    <Shell appBg={appBg} bg="#F3F3F4">
+      <PillIndicator />
+    </Shell>
+  );
+}
+
 function LiquidNotchDemo() {
   const [active, setActive] = useTab("home");
   return (
@@ -138,30 +147,6 @@ function BouncingBallDemo({ bg, appBg }: { bg: string; appBg: boolean }) {
     <Shell appBg={appBg} bg={bg}>
       <BouncingBall />
     </Shell>
-  );
-}
-
-function RegistryDemo({ id }: { id: string }) {
-  const variant = VARIANTS.find((v) => v.id === id)!;
-  const [active, setActive] = useTab(variant.items[0].id);
-  const bg =
-    variant.surface === "light"
-      ? "#ffffff"
-      : variant.surface === "gradient"
-        ? "linear-gradient(180deg,#4338ca,#1e1b4b)"
-        : "#0a0a0a";
-  return (
-    <Stage
-      background={bg}
-      tone={variant.surface === "light" ? "light" : "dark"}
-      pad={variant.inset}
-    >
-      <variant.Component
-        items={variant.items}
-        active={active}
-        onChange={setActive}
-      />
-    </Stage>
   );
 }
 
@@ -206,7 +191,7 @@ const TABS = [
     name: "Bouncing Ball",
     hint: "Orb nav UI, jelly bar — drag or fling the orb",
   },
-  ...VARIANTS.map((v) => ({ id: v.id, name: v.name, hint: v.note })),
+  { id: "pill", name: "Pill Indicator", hint: "Selected tab expands into a labelled pill" },
 ];
 
 export default function Page() {
@@ -298,7 +283,7 @@ export default function Page() {
           )}
           {tab === "liquid" && <LiquidNotchDemo />}
           {tab === "ball" && <BouncingBallDemo bg={bg} appBg={appBg} />}
-          {VARIANTS.some((v) => v.id === tab) && <RegistryDemo id={tab} />}
+          {tab === "pill" && <PillDemo appBg={appBg} />}
         </div>
       </div>
     </main>
