@@ -206,8 +206,18 @@ export default function OrbNav3D({ plainOrb = false }: { plainOrb?: boolean } = 
             </feMerge>
           </filter>
           {/* Keep the shadow out of the notch — see ScoopNav. */}
-          <mask id="bar3d-shadow-mask">
-            <rect x={-60} y={-60} width={W + 120} height={H + 120} fill="white" />
+          {/* maskUnits="userSpaceOnUse": a mask's region defaults to the
+              object's bounding box inset by -10%/120%, which clips the blur
+              and leaves hard horizontal cuts across the bar. */}
+          <mask
+            id="bar3d-shadow-mask"
+            maskUnits="userSpaceOnUse"
+            x={-160}
+            y={-160}
+            width={W + 320}
+            height={H + 320}
+          >
+            <rect x={-160} y={-160} width={W + 320} height={H + 320} fill="white" />
             <motion.circle cx={cx} cy={NOTCH_CY} r={NOTCH_R} fill="black" />
           </mask>
         </defs>

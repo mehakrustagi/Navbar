@@ -296,8 +296,18 @@ export default function ScoopNav({
               was opaque; now the fill is translucent it shows through as a
               grey cast. Knock the pill out of the shadow so only the spill
               beyond its edge survives — which also keeps it out of the notch. */}
-          <mask id={`${uid}-shadow-mask`}>
-            <rect x={-80} y={-80} width={W + 160} height={H + 160} fill="white" />
+          {/* maskUnits="userSpaceOnUse": a mask's region defaults to the
+              object's bounding box inset by -10%/120%, which clips the blur
+              and leaves hard horizontal cuts across the bar. */}
+          <mask
+            id={`${uid}-shadow-mask`}
+            maskUnits="userSpaceOnUse"
+            x={-160}
+            y={-160}
+            width={W + 320}
+            height={H + 320}
+          >
+            <rect x={-160} y={-160} width={W + 320} height={H + 320} fill="white" />
             <path d={PILL} fill="black" />
           </mask>
 
