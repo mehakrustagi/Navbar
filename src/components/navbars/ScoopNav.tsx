@@ -74,7 +74,7 @@ const TONE = {
     // it actually resolves to at the bar's own edges.
     fill: ["#090909", "#434343"] as const,
     rim: ["#8A8A8A", "#2A2A2A", "#8A8A8A"] as const,
-    idle: "rgba(255,255,255,0.55)",
+    idle: "rgba(255,255,255,0.42)",
   },
   light: {
     // Translucent white rather than a grey value: over the app screen it
@@ -82,8 +82,8 @@ const TONE = {
     // grey slab. (The node's #E5E5E5 -> #ECECEC moved only 3 levels across the
     // bar, which the browser dithered into visible grain.)
     fill: ["rgba(255,255,255,0.78)", "rgba(255,255,255,0.66)"] as const,
-    rim: ["#FFFFFF", "#EDEDED", "#FFFFFF"] as const,
-    idle: "rgba(0,0,0,0.38)",
+    rim: ["#FFFFFF", "#D6D6DA", "#FFFFFF"] as const,
+    idle: "rgba(0,0,0,0.26)",
   },
 } as const;
 
@@ -139,7 +139,7 @@ function RowIcon({
   const scale = useTransform(opacity, (o) => 0.55 + o * 0.45);
   return (
     <motion.span style={{ opacity, scale }}>
-      <SlotIcon slot={slot} color={color} />
+      <SlotIcon slot={slot} color={color} size={0.92} />
     </motion.span>
   );
 }
@@ -277,10 +277,10 @@ export default function ScoopNav({
           >
             <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="b1" />
             <feOffset in="b1" dy="8" result="o1" />
-            <feFlood floodColor="#000000" floodOpacity="0.06" result="c1" />
+            <feFlood floodColor="#000000" floodOpacity="0.10" result="c1" />
             <feComposite in="c1" in2="o1" operator="in" result="s1" />
             <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b2" />
-            <feFlood floodColor="#000000" floodOpacity="0.03" result="c2" />
+            <feFlood floodColor="#000000" floodOpacity="0.05" result="c2" />
             <feComposite in="c2" in2="b2" operator="in" result="s2" />
             <feMerge>
               <feMergeNode in="s1" />
@@ -336,7 +336,7 @@ export default function ScoopNav({
 
         {/* Inner 1px rim: stroked at 2 and clipped to the shape. */}
         <g clipPath={`url(#${uid}-clip)`}>
-          <motion.path d={d} fill="none" stroke={`url(#${uid}-rim)`} strokeWidth={1.6} />
+          <motion.path d={d} fill="none" stroke={`url(#${uid}-rim)`} strokeWidth={1.8} />
         </g>
       </svg>
 
