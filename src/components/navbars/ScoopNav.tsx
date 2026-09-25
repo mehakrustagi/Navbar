@@ -279,10 +279,10 @@ export default function ScoopNav({
           >
             <feGaussianBlur in="SourceAlpha" stdDeviation="8" result="b1" />
             <feOffset in="b1" dy="8" result="o1" />
-            <feFlood floodColor="#000000" floodOpacity="0.08" result="c1" />
+            <feFlood floodColor="#000000" floodOpacity="0.06" result="c1" />
             <feComposite in="c1" in2="o1" operator="in" result="s1" />
             <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="b2" />
-            <feFlood floodColor="#000000" floodOpacity="0.04" result="c2" />
+            <feFlood floodColor="#000000" floodOpacity="0.03" result="c2" />
             <feComposite in="c2" in2="b2" operator="in" result="s2" />
             <feMerge>
               <feMergeNode in="s1" />
@@ -291,12 +291,22 @@ export default function ScoopNav({
           </filter>
 
 
+          {/* The shadow is a blurred copy of the whole pill, so it also paints
+              under the bar's own footprint. That was invisible while the fill
+              was opaque; now the fill is translucent it shows through as a
+              grey cast. Knock the pill out of the shadow so only the spill
+              beyond its edge survives — which also keeps it out of the notch. */}
+          <mask id={`${uid}-shadow-mask`}>
+            <rect x={-80} y={-80} width={W + 160} height={H + 160} fill="white" />
+            <path d={PILL} fill="black" />
+          </mask>
+
           <clipPath id={`${uid}-clip`}>
             <motion.path d={d} />
           </clipPath>
         </defs>
 
-        <g filter={`url(#${uid}-shadow)`}>
+        <g filter={`url(#${uid}-shadow)`} mask={`url(#${uid}-shadow-mask)`}>
           <path d={PILL} fill="#000000" />
         </g>
         <motion.path d={d} fill={`url(#${uid}-fill)`} />
