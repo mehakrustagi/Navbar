@@ -1,69 +1,236 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { useState } from "react";
+import { Flame, Home, Settings } from "lucide-react";
+import Stage, { useTab } from "@/components/Stage";
+import FigmaOrbNav from "@/components/navbars/FigmaOrbNav";
+import LiquidNotch from "@/components/navbars/LiquidNotch";
+import LiquidGlassNav from "@/components/navbars/LiquidGlassNav";
+import OrbNav3D from "@/components/navbars/OrbNav3D";
+import ScoopNav, { CTA_GAP, ScoopCta } from "@/components/navbars/ScoopNav";
+import OrbNavLiquid from "@/components/navbars/OrbNavLiquid";
+import BouncingBall from "@/components/navbars/BouncingBall";
+import { VARIANTS } from "@/components/navbars/registry";
+import type { NavItem } from "@/lib/nav-items";
+import { cn } from "@/lib/utils";
+
+const NOTCH_ITEMS: NavItem[] = [
+  { id: "home", label: "Home", icon: Home },
+  { id: "trending", label: "Trending", icon: Flame },
+  { id: "settings", label: "Settings", icon: Settings },
+];
+
+function OrbDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <Stage
+      background={bg}
+      tone="light"
+      pad={false}
+    >
+      <div className="pb-7">
+        <FigmaOrbNav plainOrb={plainOrb} />
+      </div>
+    </Stage>
+  );
+}
+
+function ScoopDarkDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
+  return (
+    <Stage background={bg} tone="light" pad={false}>
+      <div className="flex items-end justify-center pb-8" style={{ gap: CTA_GAP }}>
+        <ScoopNav tone="dark" plainOrb={plainOrb} />
+        <ScoopCta tone="dark" />
+      </div>
+    </Stage>
+  );
+}
+
+function ScoopLightDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
+  return (
+    <Stage background={bg} tone="light" pad={false}>
+      <div className="flex items-end justify-center pb-8" style={{ gap: CTA_GAP }}>
+        <ScoopNav tone="light" plainOrb={plainOrb} />
+        <ScoopCta tone="light" />
+      </div>
+    </Stage>
+  );
+}
+
+function Orb3DDemo({ bg, plainOrb }: { bg: string; plainOrb: boolean }) {
+  return (
+    <Stage background={bg} tone="light" pad={false}>
+      <div className="pb-7">
+        <OrbNav3D plainOrb={plainOrb} />
+      </div>
+    </Stage>
+  );
+}
+
+function LiquidGlassDemo({ bg }: { bg: string }) {
+  return (
+    <Stage background={bg} tone="light" pad={false}>
+      <div className="pb-8">
+        <LiquidGlassNav />
+      </div>
+    </Stage>
+  );
+}
+
+function OrbLiquidDemo({ bg }: { bg: string }) {
+  return (
+    <Stage background={bg} tone="light" pad={false}>
+      <div className="pb-7">
+        <OrbNavLiquid />
+      </div>
+    </Stage>
+  );
+}
+
+function LiquidNotchDemo() {
+  const [active, setActive] = useTab("home");
+  return (
+    <Stage background="#f4f4f5">
+      <LiquidNotch items={NOTCH_ITEMS} active={active} onChange={setActive} />
+    </Stage>
+  );
+}
+
+function BouncingBallDemo({ bg }: { bg: string }) {
+  return (
+    <Stage background={bg} tone="light" pad={false}>
+      <div className="pb-7">
+        <BouncingBall />
+      </div>
+    </Stage>
+  );
+}
+
+function RegistryDemo({ id }: { id: string }) {
+  const variant = VARIANTS.find((v) => v.id === id)!;
+  const [active, setActive] = useTab(variant.items[0].id);
+  const bg =
+    variant.surface === "light"
+      ? "#ffffff"
+      : variant.surface === "gradient"
+        ? "linear-gradient(180deg,#4338ca,#1e1b4b)"
+        : "#0a0a0a";
+  return (
+    <Stage
+      background={bg}
+      tone={variant.surface === "light" ? "light" : "dark"}
+      pad={variant.inset}
+    >
+      <variant.Component
+        items={variant.items}
+        active={active}
+        onChange={setActive}
+      />
+    </Stage>
+  );
+}
+
+const TABS = [
+  {
+    id: "orb",
+    name: "Orb Nav (Figma)",
+    hint: "Drag the orb, release over an icon",
+  },
+  { id: "scoop-dark", name: "Scoop — Dark", hint: "Figma 301:3409 — scoop travels to the selected tab" },
+  { id: "scoop-light", name: "Scoop — Light", hint: "Figma 301:3410 — same bar, light fill" },
+  {
+    id: "orb-3d",
+    name: "Orb Nav — 3D Icons",
+    hint: "3D icons spin and colour up when selected",
+  },
+  {
+    id: "glass",
+    name: "Liquid Glass",
+    hint: "Lens magnifies the bar beneath it; drag it between tabs",
+  },
+  {
+    id: "orb-liquid",
+    name: "Orb Nav — Liquid",
+    hint: "Notch stretches into a tail behind the orb, then snaps back",
+  },
+  {
+    id: "liquid",
+    name: "Liquid Notch",
+    hint: "Exact circular notch, tap to move",
+  },
+  {
+    id: "ball",
+    name: "Bouncing Ball",
+    hint: "Orb nav UI, jelly bar — drag or fling the orb",
+  },
+  ...VARIANTS.map((v) => ({ id: v.id, name: v.name, hint: v.note })),
+];
+
+export default function Page() {
+  const [tab, setTab] = useState("liquid");
+  // Orb fill: the drifting aurora, or a plain white disc.
+  const [orb, setOrb] = useState<"colour" | "white">("colour");
+  const bg = "#FFFFFF";
+  const current = TABS.find((t) => t.id === tab)!;
+
+  return (
+    <main className="min-h-screen bg-white px-6 py-12">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="text-xl font-semibold text-neutral-900">
+          Bottom Nav Lab
+        </h1>
+        <p className="mt-1 text-sm text-neutral-500">
+          {TABS.length} variants — one mounted at a time.
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-2">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={cn(
+                "rounded-full px-4 py-2 text-[13px] font-medium transition-colors",
+                t.id === tab
+                  ? "bg-neutral-900 text-white"
+                  : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
+              )}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              {t.name}
+            </button>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="mt-6 flex items-center gap-3">
+          <p className="text-xs text-neutral-400">{current.hint}</p>
+          <span className="ml-auto inline-flex rounded-full bg-neutral-100 p-1">
+            {(["colour", "white"] as const).map((k) => (
+              <button
+                key={k}
+                onClick={() => setOrb(k)}
+                className={cn(
+                  "rounded-full px-3 py-1 text-[12px] font-medium capitalize transition-colors",
+                  orb === k
+                    ? "bg-neutral-900 text-white"
+                    : "text-neutral-500 hover:text-neutral-800",
+                )}
+              >
+                orb: {k}
+              </button>
+            ))}
+          </span>
         </div>
-      </main>
-    </div>
+
+        <div className="mt-6 flex justify-center">
+          {tab === "orb" && <OrbDemo bg={bg} plainOrb={orb === "white"} />}
+          {tab === "orb-liquid" && <OrbLiquidDemo bg={bg} />}
+          {tab === "glass" && <LiquidGlassDemo bg={bg} />}
+          {tab === "orb-3d" && <Orb3DDemo bg={bg} plainOrb={orb === "white"} />}
+          {tab === "scoop-dark" && <ScoopDarkDemo bg={bg} plainOrb={orb === "white"} />}
+          {tab === "scoop-light" && <ScoopLightDemo bg={bg} plainOrb={orb === "white"} />}
+          {tab === "liquid" && <LiquidNotchDemo />}
+          {tab === "ball" && <BouncingBallDemo bg={bg} />}
+          {VARIANTS.some((v) => v.id === tab) && <RegistryDemo id={tab} />}
+        </div>
+      </div>
+    </main>
   );
 }

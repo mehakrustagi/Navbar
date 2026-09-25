@@ -24,3 +24,125 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* --- Orb aurora -------------------------------------------------------- */
+/* Three blobs drifting on deliberately mismatched periods, so the composite
+   never reads as a loop. Pure CSS so nothing runs on the main thread. */
+
+@keyframes aurora-a {
+  0%   { transform: translate(-38%, -26%) scale(1.00); opacity: 0.85; }
+  33%  { transform: translate(30%, 20%)   scale(1.55); opacity: 1;    }
+  66%  { transform: translate(12%, -34%)  scale(1.15); opacity: 0.75; }
+  100% { transform: translate(-38%, -26%) scale(1.00); opacity: 0.85; }
+}
+
+@keyframes aurora-b {
+  0%   { transform: translate(32%, 28%)   scale(1.35); opacity: 0.9;  }
+  40%  { transform: translate(-30%, -12%) scale(0.95); opacity: 0.7;  }
+  70%  { transform: translate(-8%, 34%)   scale(1.5);  opacity: 1;    }
+  100% { transform: translate(32%, 28%)   scale(1.35); opacity: 0.9;  }
+}
+
+@keyframes aurora-c {
+  0%   { transform: translate(8%, -34%)   scale(1.4);  opacity: 0.8;  }
+  50%  { transform: translate(-32%, 26%)  scale(1.05); opacity: 1;    }
+  100% { transform: translate(8%, -34%)   scale(1.4);  opacity: 0.8;  }
+}
+
+.aurora-blob {
+  position: absolute;
+  inset: -30%;
+  border-radius: 9999px;
+  /* multiply, not screen: the orb base is white, and screen over white is
+     just white. */
+  mix-blend-mode: multiply;
+  filter: blur(4px);
+  will-change: transform, opacity;
+}
+
+.aurora-a { animation: aurora-a 6.5s ease-in-out infinite; }
+.aurora-b { animation: aurora-b 8.3s ease-in-out infinite; }
+.aurora-c { animation: aurora-c 10.9s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-a,
+  .aurora-b,
+  .aurora-c {
+    animation: none;
+  }
+}
+
+/* --- Orb ellipses ------------------------------------------------------ */
+/* Small ellipses drifting inside the orb. Five mismatched periods, so the
+   composite never resolves into a visible loop. Transform-only, so it runs on
+   the compositor and never touches the main thread mid-drag. */
+
+.orb-ellipse {
+  position: absolute;
+  left: 14%;
+  top: 24%;
+  width: 72%;
+  height: 52%;
+  border-radius: 9999px;
+  /* multiply, not screen: the orb base is white, and screen over white is
+     just white. Wide blur plus generous overlap is what makes them read as
+     one drifting field rather than five separate blobs. */
+  mix-blend-mode: multiply;
+  opacity: 0.92;
+  filter: blur(9px);
+  will-change: transform;
+}
+
+@keyframes orb-e1 {
+  0%   { transform: translate(-78%, -62%) rotate(-30deg) scale(0.82); }
+  28%  { transform: translate(64%, 44%)   rotate(46deg)  scale(1.48); }
+  52%  { transform: translate(18%, -72%)  rotate(-14deg) scale(0.90); }
+  76%  { transform: translate(-58%, 54%)  rotate(62deg)  scale(1.30); }
+  100% { transform: translate(-78%, -62%) rotate(-30deg) scale(0.82); }
+}
+
+@keyframes orb-e2 {
+  0%   { transform: translate(72%, 58%)   rotate(54deg)  scale(1.22); }
+  31%  { transform: translate(-66%, -26%) rotate(-48deg) scale(0.78); }
+  59%  { transform: translate(-8%, 76%)   rotate(16deg)  scale(1.52); }
+  82%  { transform: translate(56%, -48%)  rotate(-20deg) scale(0.96); }
+  100% { transform: translate(72%, 58%)   rotate(54deg)  scale(1.22); }
+}
+
+@keyframes orb-e3 {
+  0%   { transform: translate(22%, -80%)  rotate(-66deg) scale(1.34); }
+  34%  { transform: translate(-70%, 60%)  rotate(30deg)  scale(0.84); }
+  67%  { transform: translate(68%, 18%)   rotate(-10deg) scale(1.44); }
+  100% { transform: translate(22%, -80%)  rotate(-66deg) scale(1.34); }
+}
+
+@keyframes orb-e4 {
+  0%   { transform: translate(-62%, 70%)  rotate(22deg)  scale(0.88); }
+  29%  { transform: translate(60%, -58%)  rotate(-52deg) scale(1.46); }
+  63%  { transform: translate(76%, 30%)   rotate(14deg)  scale(1.02); }
+  85%  { transform: translate(-24%, -46%) rotate(40deg)  scale(1.26); }
+  100% { transform: translate(-62%, 70%)  rotate(22deg)  scale(0.88); }
+}
+
+@keyframes orb-e5 {
+  0%   { transform: translate(48%, -40%)  rotate(70deg)  scale(1.16); }
+  37%  { transform: translate(-74%, 22%)  rotate(-24deg) scale(1.50); }
+  71%  { transform: translate(14%, 66%)   rotate(34deg)  scale(0.86); }
+  100% { transform: translate(48%, -40%)  rotate(70deg)  scale(1.16); }
+}
+
+.orb-e1 { animation: orb-e1 4.4s ease-in-out infinite; }
+.orb-e2 { animation: orb-e2 5.3s ease-in-out infinite; }
+.orb-e3 { animation: orb-e3 6.1s ease-in-out infinite; }
+.orb-e4 { animation: orb-e4 7.3s ease-in-out infinite; }
+.orb-e5 { animation: orb-e5 8.6s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .orb-e1,
+  .orb-e2,
+  .orb-e3,
+  .orb-e4,
+  .orb-e5 {
+    animation: none;
+  }
+}
