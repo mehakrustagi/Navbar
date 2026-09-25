@@ -23,14 +23,14 @@ import {
 
 /* Same notch geometry as Orb Nav — a circular cut cradling the disc with a
    uniform gap, blended by tangent-continuous fillets. Only the bar's fill and
-   rim come from the Figma scoop nodes (301:3409 dark, 301:3410 light).
+   fill comes from the Figma scoop nodes (301:3409 dark, 301:3410 light).
    The bar keeps Figma's 52.46 height and 26.23 radius but runs 335 wide: at
    the node's 272.5 the shoulders leave only 34.5px between slots, which the
    20px icons cannot live in. */
 /* Sized to the app screen's own system (Figma 294:2328), so the nav is a peer
    of the controls above it rather than its own scale:
      content block  340 wide at left 26
-     input row      h 56, 1px #e8e8e8, rgba(255,255,255,0.4)
+     input row      h 56, rgba(255,255,255,0.4)
      menu button    48, radius 28.8, rgba(255,255,255,0.2)
      shadow         0 3.84 28.8 -1.92 rgba(0,0,0,0.05)
      icons          24
@@ -43,7 +43,6 @@ export const CTA_SIZE = 48;
 export const CTA_GAP = 12;
 
 /** The screen's surface tokens. */
-const SYS_BORDER = "#e8e8e8";
 const SYS_SHADOW = "0px 3.84px 28.8px -1.92px rgba(0,0,0,0.05)";
 const SYS_ICON = 24;
 
@@ -83,7 +82,6 @@ const TONE = {
     // Figma's gradient vector runs far outside the bar; these are the colours
     // it actually resolves to at the bar's own edges.
     fill: ["#090909", "#434343"] as const,
-    rim: ["#8A8A8A", "#2A2A2A", "#8A8A8A"] as const,
     idle: "rgba(255,255,255,0.42)",
   },
   light: {
@@ -92,7 +90,6 @@ const TONE = {
     // grey slab. (The node's #E5E5E5 -> #ECECEC moved only 3 levels across the
     // bar, which the browser dithered into visible grain.)
     fill: ["rgba(255,255,255,0.4)", "rgba(255,255,255,0.4)"] as const,
-    rim: [SYS_BORDER, SYS_BORDER, SYS_BORDER] as const,
     idle: "rgba(0,0,0,0.26)",
   },
 } as const;
@@ -237,19 +234,6 @@ export default function ScoopNav({
             <stop offset="1" stopColor={t.fill[1]} />
           </linearGradient>
 
-          {/* Grey rim gradient, running with the bar's diagonal. */}
-          <linearGradient
-            id={`${uid}-rim`}
-            gradientUnits="userSpaceOnUse"
-            x1={0}
-            y1={TOP}
-            x2={W}
-            y2={TOP}
-          >
-            <stop stopColor={t.rim[0]} />
-            <stop offset="0.5" stopColor={t.rim[1]} />
-            <stop offset="1" stopColor={t.rim[2]} />
-          </linearGradient>
 
           {/*
             Film grain over the fill. feTurbulence is expensive, but it runs on
@@ -340,10 +324,6 @@ export default function ScoopNav({
           />
         </g>
 
-        {/* Inner 1px rim: stroked at 2 and clipped to the shape. */}
-        <g clipPath={`url(#${uid}-clip)`}>
-          <motion.path d={d} fill="none" stroke={`url(#${uid}-rim)`} strokeWidth={2} />
-        </g>
       </svg>
 
       {SLOTS.map((slot, i) => (
@@ -443,7 +423,7 @@ export function ScoopCta({
         // the screen's menu button: 48, radius 28.8, white/20, 1px #e8e8e8
         borderRadius: 28.8,
         background: tone === "dark" ? "rgba(20,20,24,0.55)" : "rgba(255,255,255,0.2)",
-        boxShadow: `inset 0 0 0 1px ${SYS_BORDER}, ${SYS_SHADOW}`,
+        boxShadow: SYS_SHADOW,
       }}
     >
       <img
